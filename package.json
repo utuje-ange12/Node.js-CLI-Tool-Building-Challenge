@@ -1,18 +1,22 @@
 {
   "name": "taskmate-cli",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "A simple Node.js CLI task manager",
+  "main": "src/app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node src/app.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "type": "commonjs",
+  "type": "module",
   "dependencies": {
     "chalk": "^6.0.1",
     "cli-table3": "^0.6.5",
     "ora": "^10.0.0"
+  },
+  "bin": {
+    "taskmate": "./src/app.js"
   }
 }
