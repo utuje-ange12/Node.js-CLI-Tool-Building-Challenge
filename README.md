@@ -1,12 +1,11 @@
-
 # TaskMate CLI
 
-TaskMate is a simple command-line task management application built with Node.js.
+TaskMate is a command-line task management application built with Node.js.
 
 ## Project Objectives
 
 The application allows users to:
-- Add tasks
+- Add new tasks
 - View all tasks
 - Mark tasks as completed
 - Delete tasks
@@ -19,6 +18,7 @@ The application allows users to:
 - JavaScript
 - npm
 - JSON
+- Node.js util.parseArgs
 - Chalk
 - Ora
 - cli-table3
@@ -28,26 +28,4 @@ The application allows users to:
 Clone the repository:
 
 ```bash
-git clone YOUR_REPOSITORY_URL
-```
-
-Install dependencies:
-
-```bash
-npm install
-```
-
-Run the application:
-
-```bash
-npm start -- --help
-```
-
-## Contributors
-
-- Collaborator 1
-- Collaborator 2
-
-## Course
-
-Node.js CLI Tool Building Challenge
+git clone https://github.com/utuje-ange12/Node.js-CLI-Tool-Building-Challenge.git
