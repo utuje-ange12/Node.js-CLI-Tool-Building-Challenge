@@ -18,3 +18,7 @@ export async function loadTasks() {
         throw err;
     }
 }
+
+export async function saveTasks(tasks) {
+    await writeFile(DATA_FILE, JSON.stringify(tasks, null, 2) + "\n", "utf8");
+}
