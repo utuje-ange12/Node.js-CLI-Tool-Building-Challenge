@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 import { parseArgs } from "node:util";
+import { readFile } from "node:fs/promises";
 import ora from "ora";
 
 import {
@@ -9,93 +10,89 @@ import {
   completeTaskCommand,
   deleteTaskCommand,
 } from "./src/commands.js";
-
 import { getMotivationalQuote } from "./src/quote.js";
+import { showSuccess, showError, showInfo, displayTasks } from "./src/display.js";
 
-import {
-  showSuccess,
-  showError,
-  showInfo,
-  displayTasks,
-} from "./src/display.js";
+function fail(message) {
+  showError(message);
+  process.exit(1);
+}
 
-// Read terminal arguments
-const { positionals } = parseArgs({
-  allowPositionals: true,
-});
+function showHelp() {
+  showInfo("TaskMate CLI - Available Commands:");
+  console.log('  add <title>      Add a new task');
+  console.log("  list             List all tasks");
+  console.log("  complete <id>    Mark a task as completed");
+  console.log("  delete <id>      Delete a task");
+  console.log("  quote            Get a motivational quote");
+  console.log("  help             Show this help");
+  console.log("");
+  console.log("Options: -h, --help   -v, --version");
+  console.log('Example: taskmate add "Revise semver"');
+}
 
-const command = positionals[0];
-
-// Handle CLI commands
+let parsed;
 try {
-  // ADD TASK
-  if (command === "add") {
-    const title = positionals[1];
+  parsed = parseArgs({
+    allowPositionals: true,
+    options: {
+      help: { type: "boolean", short: "h" },
+      version: { type: "boolean", short: "v" },
+    },
+  });
+} catch (err) {
+  fail(`${err.message}. Run: taskmate --help`);
+}
 
-    if (!title) {
-      showError("Please provide a task title.");
-    } else {
-      addTaskCommand(title);
-      showSuccess("Task added successfully!");
-    }
+const { values, positionals } = parsed;
+const [command, ...args] = positionals;
 
-  // LIST TASKS
+function parseId(value) {
+  const id = Number(value);
+  return Number.isInteger(id) && id > 0 ? id : null;
+}
+
+try {
+  if (values.version) {
+    const pkg = JSON.parse(
+      await readFile(new URL("./package.json", import.meta.url), "utf8")
+    );
+    console.log(pkg.version);
+  } else if (values.help || !command || command === "help") {
+    showHelp();
+  } else if (command === "add") {
+    const title = args.join(" ").trim();
+    if (!title) fail("Please provide a task title.");
+    await addTaskCommand(title);
+    showSuccess("Task added successfully!");
   } else if (command === "list") {
-    const tasks = listTasksCommand();
-    displayTasks(tasks);
-
-  // COMPLETE TASK
+    displayTasks(await listTasksCommand());
   } else if (command === "complete") {
-    const id = Number(positionals[1]);
-
-    if (!Number.isInteger(id) || id <= 0) {
-      showError("Please provide a valid task ID.");
-    } else {
-      completeTaskCommand(id);
-      showSuccess("Task completed successfully!");
-    }
-
-  // DELETE TASK
+    const id = parseId(args[0]);
+    if (!id) fail("Please provide a valid task ID.");
+    const task = await completeTaskCommand(id);
+    if (!task) fail(`No task with ID ${id}.`);
+    showSuccess("Task completed successfully!");
   } else if (command === "delete") {
-    const id = Number(positionals[1]);
-
-    if (!Number.isInteger(id) || id <= 0) {
-      showError("Please provide a valid task ID.");
-    } else {
-      deleteTaskCommand(id);
-      showSuccess("Task deleted successfully!");
-    }
-
-  // MOTIVATIONAL QUOTE
+    const id = parseId(args[0]);
+    if (!id) fail("Please provide a valid task ID.");
+    const task = await deleteTaskCommand(id);
+    if (!task) fail(`No task with ID ${id}.`);
+    showSuccess("Task deleted successfully!");
   } else if (command === "quote") {
     const spinner = ora("Fetching a motivational quote...").start();
-
     const result = await getMotivationalQuote();
-
     if (result) {
       spinner.succeed("Your motivational quote is ready!");
       console.log(`"${result.quote}"`);
       console.log(`- ${result.author}`);
     } else {
       spinner.fail("Could not fetch a motivational quote.");
+      process.exit(1);
     }
-
-  // HELP
-  } else if (command === "help") {
-    showInfo("TaskMate CLI - Available Commands:");
-
-    console.log("  add <title>  - Add a new task");
-    console.log("  list         - List all tasks");
-    console.log("  complete <id> - Complete a task");
-    console.log("  delete <id>  - Delete a task");
-    console.log("  quote        - Get a motivational quote");
-    console.log("  help         - Show available commands");
-
   } else {
-    showError("Unknown command. Type 'node taskmate.js help' for help.");
+    fail(`Unknown command: ${command}. Run: taskmate --help`);
   }
-
 } catch (error) {
-  showError(`An error occurred: ${error.message}`);
-  process.exitCode = 1;
+  fail(`An error occurred: ${error.message}`);
 }
