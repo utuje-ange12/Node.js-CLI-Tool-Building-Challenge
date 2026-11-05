@@ -1,57 +1,44 @@
 # TaskMate CLI
 
-<<<<<<< HEAD
-TaskMate is a command-line task management application built with Node.js.
-=======
-A simple command-line task manager built with Node.js.
->>>>>>> origin/main
+A command-line task manager built with Node.js.
 
-## Setup
+## Install
 
-<<<<<<< HEAD
-The application allows users to:
-- Add new tasks
-- View all tasks
-- Mark tasks as completed
-- Delete tasks
-- Save tasks in JSON format
-- Fetch motivational quotes from an API
-
-## Technologies Used
-
-- Node.js
-- JavaScript
-- npm
-- JSON
-- Node.js util.parseArgs
-- Chalk
-- Ora
-- cli-table3
-
-## Installation
-
-Clone the repository:
-
-```bash
+```
 git clone https://github.com/utuje-ange12/Node.js-CLI-Tool-Building-Challenge.git
-=======
-```
+cd Node.js-CLI-Tool-Building-Challenge
 npm install
+npm link
 ```
+
+After `npm link`, the `taskmate` command works from any folder.
 
 ## Usage
 
 ```
-npm start -- add "Buy milk"
-npm start -- list
-npm start -- done 1
-npm start -- delete 1
+taskmate add "Revise semver"
+taskmate list
+taskmate complete 1
+taskmate delete 1
+taskmate quote
+taskmate help
 ```
 
-Tasks are stored in `data/tasks.json`.
+## Features
+
+- Argument parsing with `util.parseArgs`
+- Tasks saved in `data/tasks.json`
+- `quote` fetches a motivational quote from a web API, with a spinner
+- Coloured output (`chalk`) and a task table (`cli-table3`)
+- Errors exit with code 1
 
 ## Scripts
 
 - `npm start` runs the app
-- `npm run dev` runs the app and restarts on file changes
->>>>>>> origin/main
+- `npm run dev` restarts on file changes
+- `npm test` runs the tests
+- `npm run format` formats the code with Prettier
+
+## Authors
+
+Collaborator 1 and Collaborator 2 (group of two).
